@@ -1,3 +1,5 @@
+---
+
 # Fine-Tuning LLaMA 2 7B Chat Model with LoRA for Persona-Based Chat
 
 ## Overview
@@ -36,7 +38,7 @@ To fine-tune the model efficiently, the **LoRA (Low-Rank Adaptation)** method wa
 
 ## 3. **Justifications:**
 
-- **Dataset Choice:** The dataset used for fine-tuning is a persona-based conversation dataset (referred to as `Cynaptics/persona-chat`), which contains hypothetical dialogues between two personas. This dataset was chosen to train the model to generate more human-like responses that align with specific personalities.
+- **Dataset Choice:** The dataset used for fine-tuning is a persona-based conversation dataset (`Cynaptics/persona-chat`), which contains hypothetical dialogues between two personas. This dataset was chosen to train the model to generate more human-like responses that align with specific personalities.
   
 - **Preprocessing:** The dataset was preprocessed to ensure it was in the required format for fine-tuning. Specifically:
   - **Shuffling** and **subsetting** the dataset to select 1000 samples for efficient training.
@@ -58,5 +60,3 @@ Once the model was fine-tuned, the weights were uploaded to Hugging Face for eas
 - **Link to Model Weights:** [Llama-2-7b-chat-finetune - Hugging Face](https://huggingface.co/rudrajadon18/Llama-2-7b-chat-finetune)
 
 ---
-
-This README includes the first 4 key points regarding your model choice, fine-tuning method, dataset preprocessing, and model weights.
