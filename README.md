@@ -1,4 +1,3 @@
----
 
 # Fine-Tuning LLaMA 2 7B Chat Model with LoRA for Persona-Based Chat
 
@@ -59,4 +58,3 @@ Once the model was fine-tuned, the weights were uploaded to Hugging Face for eas
 
 - **Link to Model Weights:** [Llama-2-7b-chat-finetune - Hugging Face](https://huggingface.co/rudrajadon18/Llama-2-7b-chat-finetune)
 
----
