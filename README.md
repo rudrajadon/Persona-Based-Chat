@@ -1,60 +1,142 @@
+# Fine-Tuning Llama 2 7B with LoRA for Persona-Based Conversations
 
-# Fine-Tuning LLaMA 2 7B Chat Model with LoRA for Persona-Based Chat
+[![Model on Hugging Face](https://img.shields.io/badge/Hugging%20Face-Model-yellow)](https://huggingface.co/rudrajadon18/Llama-2-7b-chat-finetune)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-## Overview
+## 🚀 Overview
 
-This repository contains code and documentation for fine-tuning the **LLaMA 2 7B Chat Model** using the **LoRA (Low-Rank Adaptation)** method on a persona-based dataset. The goal is to personalize the model's responses based on a defined persona while ensuring efficient training using LoRA.
+This repository provides the code and methodology for fine-tuning the `NousResearch/Llama-2-7b-chat-hf` model on a persona-based chat dataset. The primary goal is to adapt the model to generate responses consistent with a specific persona, making conversations feel more natural and personalized.
 
----
-
-## 1. **Choice of LLM:**
-
-For this task, the **LLaMA 2 7B Chat Model** from **NousResearch** was selected due to its state-of-the-art performance in natural language understanding and generation. LLaMA models have shown strong capabilities in a variety of tasks, including conversation generation. 
-
-- **Model Name:** `NousResearch/Llama-2-7b-chat-hf`
-- **Reason for choosing LLaMA 2:**
-  - LLaMA 2 models are efficient and provide great generalization capabilities on various downstream tasks.
-  - The 7B version offers a good balance between performance and computational resources, making it ideal for fine-tuning on a specific dataset.
-  - It is pre-trained on a vast amount of data, allowing for significant adaptation to the task with fewer epochs.
+To achieve this efficiently, the model was fine-tuned using **Low-Rank Adaptation (LoRA)** and **4-bit quantization**, making it possible to train on consumer-grade hardware like Google Colab.
 
 ---
 
-## 2. **Choice of Fine-Tuning Method:**
+## ✨ Key Features
 
-To fine-tune the model efficiently, the **LoRA (Low-Rank Adaptation)** method was used. LoRA allows for adapting large pre-trained models with minimal computational resources and memory overhead by adding low-rank matrices to the model layers, rather than modifying the entire model.
-
-- **LoRA Parameters:**
-  - **LoRA Attention Dimension (`lora_r`)**: 64
-  - **Alpha Scaling Factor (`lora_alpha`)**: 16
-  - **Dropout (`lora_dropout`)**: 0.1
-  
-- **Why LoRA?**
-  - LoRA provides a way to fine-tune large models like LLaMA 2 with significantly fewer resources compared to traditional fine-tuning.
-  - It allows for more efficient memory usage, making it possible to run the model in low-resource environments, such as on Google Colab.
-  - The addition of low-rank matrices enables fast adaptation without sacrificing performance, especially useful for tasks like persona-based conversation generation.
+- **Model**: Leverages the powerful `Llama-2-7b-chat-hf` model.
+- **Efficient Fine-Tuning**: Utilizes LoRA for parameter-efficient fine-tuning, drastically reducing computational and memory requirements.
+- **Quantization**: Employs 4-bit quantization through `bitsandbytes` to make training accessible on platforms like Google Colab.
+- **Dataset**: Fine-tuned on the `Cynaptics/persona-chat` dataset, which contains dialogues designed to reflect distinct personalities.
+- **Reproducibility**: All configurations and preprocessing steps are documented for easy replication.
 
 ---
 
-## 3. **Justifications:**
+## 📋 Table of Contents
 
-- **Dataset Choice:** The dataset used for fine-tuning is a persona-based conversation dataset (`Cynaptics/persona-chat`), which contains hypothetical dialogues between two personas. This dataset was chosen to train the model to generate more human-like responses that align with specific personalities.
-  
-- **Preprocessing:** The dataset was preprocessed to ensure it was in the required format for fine-tuning. Specifically:
-  - **Shuffling** and **subsetting** the dataset to select 1000 samples for efficient training.
-  - **Transforming the data** to incorporate persona context (Persona B's facts) and segment the conversation turns. This helps in personalizing responses based on persona-specific information.
-  - **Special tokens** like `<persona_b>` and `[INST]` were added to separate persona context from the dialogue and guide the model during fine-tuning.
-  
-- **Efficiency:** Given the large size of the LLaMA 2 7B model, LoRA provides an efficient fine-tuning strategy without the need for extensive hardware resources. This method is perfect for this task as it adapts the model to the persona-based conversations without altering the entire model architecture.
-  
-- **Training Process:** The training process is carried out with a batch size of 4, learning rate of 2e-4, and cosine learning rate scheduler, optimized using the `paged_adamw_32bit` optimizer. Gradient accumulation is used to ensure stability during training.
-
-- **Compute Constraints:** The fine-tuning was performed on **Google Colab** using **4-bit quantization** (via `bitsandbytes`) to reduce memory footprint, which allowed for training on limited resources while maintaining model performance.
+1.  Model and Method Selection
+2.  Fine-Tuning Details
+3.  How to Use the Model
+4.  Model Weights
 
 ---
 
-## 4. **Model Weights:**
+## 🧠 Model and Method Selection
 
-Once the model was fine-tuned, the weights were uploaded to Hugging Face for easy access and reuse.
+### Language Model: `NousResearch/Llama-2-7b-chat-hf`
 
-- **Link to Model Weights:** [Llama-2-7b-chat-finetune - Hugging Face](https://huggingface.co/rudrajadon18/Llama-2-7b-chat-finetune)
+The Llama 2 7B chat model was chosen for its exceptional balance of performance and resource requirements. It is pre-trained on a massive corpus of text, giving it a strong foundation in natural language that can be effectively adapted to new tasks with minimal fine-tuning.
+
+### Fine-Tuning Method: LoRA (Low-Rank Adaptation)
+
+Instead of traditional fine-tuning which updates all model weights, **LoRA** was used. This method freezes the original model weights and injects small, trainable low-rank matrices into the Transformer layers.
+
+**Advantages of using LoRA:**
+- **Resource Efficiency**: Dramatically reduces the number of trainable parameters, allowing fine-tuning on limited VRAM.
+- **Faster Training**: Less computation per training step leads to faster fine-tuning cycles.
+- **No Catastrophic Forgetting**: The original model weights remain unchanged, preserving the pre-trained knowledge.
+
+---
+
+## 🛠️ Fine-Tuning Details
+
+### Dataset and Preprocessing
+
+- **Dataset**: `Cynaptics/persona-chat`, a conversational dataset where each dialogue is associated with a specific persona.
+- **Preprocessing Steps**:
+    1. The dataset was shuffled, and a subset of 1000 samples was selected for training.
+    2. The data was formatted to explicitly provide the persona's context to the model. Special tokens like `<persona_b>` and `[INST]` were used to delineate the persona information from the user's query, guiding the model's learning process.
+
+### LoRA Configuration
+
+The following LoRA parameters were used to configure the low-rank adaptation:
+
+| Parameter      | Value | Description                                                    |
+| :------------- | :---- | :------------------------------------------------------------- |
+| `lora_r`       | `64`  | The rank (dimension) of the update matrices.                   |
+| `lora_alpha`   | `16`  | The scaling factor for the LoRA activations.                   |
+| `lora_dropout` | `0.1` | Dropout probability for the LoRA layers to prevent overfitting.|
+
+### Training Parameters
+
+The model was trained on **Google Colab** under the following conditions:
+
+- **Quantization**: 4-bit via `bitsandbytes`.
+- **Optimizer**: `paged_adamw_32bit`.
+- **Learning Rate**: `2e-4` with a cosine scheduler.
+- **Batch Size**: `4`.
+- **Gradient Accumulation**: Used to stabilize training with a small batch size.
+
+---
+
+## 🚀 How to Use the Model
+
+You can easily load and use the fine-tuned model from the Hugging Face Hub using the `transformers`, `accelerate`, and `peft` libraries.
+
+First, make sure you have the required libraries installed:
+```bash
+pip install transformers torch accelerate bitsandbytes peft
+```
+
+Next, use the following Python script to load the model and run inference:
+
+```python
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from peft import PeftModel
+
+# --- Configuration ---
+base_model_name = "NousResearch/Llama-2-7b-chat-hf"
+peft_model_id = "rudrajadon18/Llama-2-7b-chat-finetune"
+
+# --- Quantization Configuration ---
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,
+)
+
+# --- Load Base Model ---
+base_model = AutoModelForCausalLM.from_pretrained(
+    base_model_name,
+    quantization_config=bnb_config,
+    device_map="auto",
+    trust_remote_code=True,
+)
+
+# --- Load Tokenizer ---
+tokenizer = AutoTokenizer.from_pretrained(base_model_name, trust_remote_code=True)
+tokenizer.pad_token = tokenizer.eos_token
+
+# --- Load LoRA Adapter ---
+model = PeftModel.from_pretrained(base_model, peft_model_id)
+model.eval()
+
+# --- Prepare Input ---
+persona_prompt = "<persona_b>I love to read books. I am a vegetarian. I have a dog named fluffy. I like to play video games."
+query = "What are your favorite hobbies?"
+prompt = f"<s>[INST] {persona_prompt} {query} [/INST]"
+
+# --- Generate Response ---
+inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
+output = model.generate(**inputs, max_new_tokens=100)
+
+print(tokenizer.decode(output[0], skip_special_tokens=True))
+```
+
+This script loads the base Llama 2 model in 4-bit, attaches the fine-tuned LoRA weights, and generates a response based on a sample persona and query.
+
+## 🤗 Model Weights
+The fine-tuned model adapters are publicly available on the Hugging Face Hub. You can access them at the following link:
+
+- **Hugging Face Model**: [rudrajadon18/Llama-2-7b-chat-finetune](https://huggingface.co/rudrajadon18/Llama-2-7b-chat-finetune)
 
